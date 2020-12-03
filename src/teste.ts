@@ -1,5 +1,4 @@
-
-function teste (a: number): number {
+const teste = (a: number): number => {
   return a + 10
 }
 
