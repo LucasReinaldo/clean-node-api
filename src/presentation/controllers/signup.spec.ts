@@ -205,6 +205,27 @@ describe('SignUp Controller', () => {
     expect(httpResponse.body).toEqual(new ServerError())
   })
 
+  test('it should return 500 (server Error) if CreateAccount throws exceptioin', () => {
+    const { sut, createAccountStub } = makeSut()
+
+    jest.spyOn(createAccountStub, 'create').mockImplementationOnce(() => {
+      throw new Error()
+    })
+
+    const httpRequest = {
+      body: {
+        name: 'name test',
+        email: 'mailtest@mail.com',
+        password: 'passwordtest',
+        passwordConfirmation: 'passwordtest'
+      }
+    }
+    const httpResponse = sut.handle(httpRequest)
+
+    expect(httpResponse.statusCode).toBe(500)
+    expect(httpResponse.body).toEqual(new ServerError())
+  })
+
   test('it should call CreateAccount adding data', () => {
     const { sut, createAccountStub } = makeSut()
 
