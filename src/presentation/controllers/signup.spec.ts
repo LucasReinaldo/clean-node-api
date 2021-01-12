@@ -23,9 +23,9 @@ const makeCreateAccount = (): CreateAccount => {
     create (account: CreateAccountModel): AccountModel {
       const fakeAccount = {
         id: 'fake_id',
-        name: 'fake_name',
-        email: 'fake_mail',
-        password: 'fake_password'
+        name: 'name test',
+        email: 'mailtest@mail.com',
+        password: 'passwordtest'
       }
 
       return fakeAccount
@@ -69,6 +69,27 @@ const makeSut = (): SutTypes => {
 }
 
 describe('SignUp Controller', () => {
+  test('it should return 200 if data is provided', () => {
+    const { sut } = makeSut()
+    const httpRequest = {
+      body: {
+        name: 'name test',
+        email: 'mailtest@mail.com',
+        password: 'passwordtest',
+        passwordConfirmation: 'passwordtest'
+      }
+    }
+    const httpResponse = sut.handle(httpRequest)
+
+    expect(httpResponse.statusCode).toBe(200)
+    expect(httpResponse.body).toEqual({
+      id: 'fake_id',
+      name: 'name test',
+      email: 'mailtest@mail.com',
+      password: 'passwordtest'
+    })
+  })
+
   test('it should return 400 if name is not provided', () => {
     const { sut } = makeSut()
 
@@ -167,23 +188,6 @@ describe('SignUp Controller', () => {
     expect(httpResponse.body).toEqual(new InvalidParamError('email'))
   })
 
-  test('it should call EmailValidator with correct email', () => {
-    const { sut, emailValidatorStub } = makeSut()
-
-    const isValidSpy = jest.spyOn(emailValidatorStub, 'isValid')
-    const httpRequest = {
-      body: {
-        name: 'name test',
-        email: 'mailtest@mail.com',
-        password: 'passwordtest',
-        passwordConfirmation: 'passwordtest'
-      }
-    }
-    sut.handle(httpRequest)
-
-    expect(isValidSpy).toHaveBeenCalledWith('mailtest@mail.com')
-  })
-
   test('it should return 500 (server Error) if EmailValidator throws exceptioin', () => {
     const { sut, emailValidatorStub } = makeSut()
 
@@ -224,6 +228,23 @@ describe('SignUp Controller', () => {
 
     expect(httpResponse.statusCode).toBe(500)
     expect(httpResponse.body).toEqual(new ServerError())
+  })
+
+  test('it should call EmailValidator with correct email', () => {
+    const { sut, emailValidatorStub } = makeSut()
+
+    const isValidSpy = jest.spyOn(emailValidatorStub, 'isValid')
+    const httpRequest = {
+      body: {
+        name: 'name test',
+        email: 'mailtest@mail.com',
+        password: 'passwordtest',
+        passwordConfirmation: 'passwordtest'
+      }
+    }
+    sut.handle(httpRequest)
+
+    expect(isValidSpy).toHaveBeenCalledWith('mailtest@mail.com')
   })
 
   test('it should call CreateAccount adding data', () => {
