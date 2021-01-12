@@ -16,6 +16,7 @@ const makeEmailValidator = (): EmailValidator => {
 
   return new EmailValidatorStub()
 }
+
 /**
  *
  const makeEmailValidatorError = (): EmailValidator => {
@@ -109,6 +110,22 @@ describe('SignUp Controller', () => {
 
     expect(httpResponse.statusCode).toBe(400)
     expect(httpResponse.body).toEqual(new MissingParamError('passwordConfirmation'))
+  })
+
+  test('it should return 400 if passwordConfirmation does not match', () => {
+    const { sut } = makeSut()
+    const httpRequest = {
+      body: {
+        name: 'name test',
+        email: 'mailtest@mail.com',
+        password: 'passwordtest',
+        passwordConfirmation: 'doesnotmatch'
+      }
+    }
+    const httpResponse = sut.handle(httpRequest)
+
+    expect(httpResponse.statusCode).toBe(400)
+    expect(httpResponse.body).toEqual(new InvalidParamError('passwordConfirmation'))
   })
 
   test('it should return 400 if an invalid email is not provided', () => {
